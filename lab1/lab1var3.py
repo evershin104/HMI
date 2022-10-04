@@ -1,7 +1,8 @@
 from ast import In
-import string
 from unicodedata import decimal
 import gi
+from locale import atof, format_string
+
 
 gi.require_version('Gtk', '3.0')
 
@@ -31,15 +32,10 @@ class Main:
     
     def convert_to_celsius(self, widget):
         '''Define converter function from Far to Cel'''
-        far_input = self.builder.get_object('far_deg').get_text()
-
         # Check input data 
         try:
-            if far_input.find('.') != -1:
-                raise InvalidOperation
-            fareng = Decimal(far_input.replace(',','.'))
-            
-        except InvalidOperation:
+            fareng = atof(self.builder.get_object('far_deg').get_text())
+        except ValueError:
             self.builder.get_object('error_label').set_visible(True)
             self.builder.get_object('cel_deg').set_text('')
             return
@@ -47,21 +43,15 @@ class Main:
         # Insert calculated value into Celcius Entry
         self.builder.get_object('error_label').set_visible(False)
         self.builder.get_object('cel_deg').set_text(
-            ("%.2f" % ((fareng - 32) * 5 / 9))
-            .replace('.', ',')
+            format_string("%.2f", ((fareng - 32) * 5 / 9))
         )
         
     def convert_to_fareng(self, widget):
         '''Define converter function from Cel to Far'''
-        cel_input = self.builder.get_object('cel_deg').get_text()
-
         # Check input data 
         try:
-            if cel_input.find('.') != -1:
-                raise InvalidOperation
-            cel = Decimal(cel_input.replace(',','.'))
-            
-        except InvalidOperation:
+            cel = atof(self.builder.get_object('cel_deg').get_text())
+        except ValueError:
             self.builder.get_object('error_label').set_visible(True)
             self.builder.get_object('far_deg').set_text('')
             return
@@ -69,8 +59,7 @@ class Main:
         # Insert calculated value into Celcius Entry
         self.builder.get_object('error_label').set_visible(False)
         self.builder.get_object('far_deg').set_text(
-            ("%.2f" % (cel * 9 / 5 + 32))
-            .replace('.', ',')
+            format_string("%.2f", (cel * 9 / 5 + 32))
         )
    
 main = Main()
